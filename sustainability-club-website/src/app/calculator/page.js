@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input, Select, SelectItem } from "@heroui/react";
 import { 
   PieChart, 
-  Pie, 
-  Cell, 
+  Pie,
+  Cell,
   ResponsiveContainer, 
   BarChart, 
   Bar, 
@@ -28,17 +28,16 @@ import {
   ChevronDown,
   LayoutDashboard,
   ClipboardList,
-  Sparkles,
-  ArrowRight
+  Sparkles
 } from 'lucide-react';
 import { 
-  CATEGORIES, 
-  COMPARISON_DATA, 
-  calculateScore, 
-  getCategoryScore,
+  CATEGORIES,
+  calculateScore,
   CHART_COLORS,
   ANALYSIS_CHARTS,
-  SIMULATION_CHARTS
+  SIMULATION_CHARTS,
+  INITIAL_DATA,
+  RESULT_TYPES
 } from './calculatorData';
 
 
@@ -50,7 +49,7 @@ const CategoryButton = ({ cat, isActive, onAdd, onRemove }) => {
       <button
         onClick={() => onRemove(cat.id)}
         onMouseEnter={() => setIsDeleteHovered(false)}
-        className={`group relative flex items-center justify-center gap-2 px-8 py-5 rounded-2xl font-bold transition-all border-2 overflow-hidden min-w-[160px] ${
+        className={`group relative flex items-center justify-center gap-2 px-8 py-5 rounded-2xl font-bold transition-all border-2 overflow-hidden min-w-40 ${
           isDeleteHovered 
             ? 'bg-red-500 border-red-500 text-white' 
             : 'bg-green-50 border-primary-green text-primary-green'
@@ -100,30 +99,23 @@ const CategoryButton = ({ cat, isActive, onAdd, onRemove }) => {
 };
 
 export default function Calculator() {
-  const [activeSelections, setActiveSelections] = useState(['transport', 'diet']);
-  const [data, setData] = useState({
-    transport: 0,
-    electricity: 0,
-    waste: 0,
-    diet: '4.5',
-    water: 0,
-    flights: 0,
-    heating: 0
-  });
+  const [activeSelections, setActiveSelections] = useState([]);
+  const [data, setData] = useState(INITIAL_DATA);
 
-  const [simulationData, setSimulationData] = useState({
-    transport: 0,
-    electricity: 0,
-    waste: 0,
-    diet: '4.5',
-    water: 0,
-    flights: 0,
-    heating: 0
-  });
+  const [simulationData, setSimulationData] = useState(INITIAL_DATA);
+
+  const [expandedCategories, setExpandedCategories] = useState({});
+
+  const toggleCategoryExpansion = (id) => {
+    setExpandedCategories(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
 
   const totalScore = useMemo(() => calculateScore(data, activeSelections), [data, activeSelections]);
   const simTotalScore = useMemo(() => calculateScore(simulationData, activeSelections), [simulationData, activeSelections]);
+
+  const dailyFootprint = totalScore.dailyFootprint || "0.00";
+  const simDailyFootprint = simTotalScore.dailyFootprint || "0.00";
 
   const analysisChartsData = useMemo(() => {
     return Object.values(ANALYSIS_CHARTS).reduce((acc, chart) => {
@@ -149,16 +141,29 @@ export default function Calculator() {
     setActiveSelections(activeSelections.filter(item => item !== id));
   };
 
-  const updateValue = (id, val) => {
-    setData(prev => ({ ...prev, [id]: val }));
+  const updateValue = (catId, inputId, val) => {
+    setData(prev => ({
+      ...prev,
+      [catId]: { ...prev[catId], [inputId]: val }
+    }));
     // Also update simulationData when original data changes to keep them in sync
     // unless the user is specifically interacting with simulation controls
-    setSimulationData(prev => ({ ...prev, [id]: val }));
+    setSimulationData(prev => ({
+      ...prev,
+      [catId]: { ...prev[catId], [inputId]: val }
+    }));
+  };
+
+  const updateSimValue = (catId, inputId, val) => {
+    setSimulationData(prev => ({
+      ...prev,
+      [catId]: { ...prev[catId], [inputId]: val }
+    }));
   };
 
   const isAnalysisVisible = useMemo(() => {
-    return activeSelections.length > 0 && parseFloat(totalScore) > 0;
-  }, [activeSelections, totalScore]);
+    return activeSelections.length > 0 && parseFloat(dailyFootprint) > 0;
+  }, [activeSelections, dailyFootprint]);
 
   const [showPopup, setShowPopup] = useState(false);
   const inputSectionRef = useRef(null);
@@ -169,12 +174,10 @@ export default function Calculator() {
       if (!inputSectionRef.current || !analysisSectionRef.current) return;
 
       const inputRect = inputSectionRef.current.getBoundingClientRect();
-      const analysisRect = analysisSectionRef.current.getBoundingClientRect();
       const simulationSection = document.getElementById('simulation-section');
       const simulationRect = simulationSection?.getBoundingClientRect();
       
       const reachedEndOfInput = inputRect.bottom <= window.innerHeight + 100;
-      const reachedAnalysis = analysisRect.top <= window.innerHeight - 100;
       const reachedSimulation = simulationRect ? simulationRect.top <= window.innerHeight - 100 : false;
 
       // Show popup if analysis is visible and we've reached the end of inputs, 
@@ -188,7 +191,7 @@ export default function Calculator() {
   }, [isAnalysisVisible]);
 
   return (
-    <div className="max-w-[1400px] mx-auto py-16 px-4 relative">
+    <div className="max-w-350 mx-auto py-16 px-4 relative">
       <div className="grid xl:grid-cols-12 gap-8 items-start">
         {/* Sidebar Navigation - Fixed width column on XL screens */}
         <div className="hidden xl:block xl:col-span-2 sticky top-24">
@@ -198,7 +201,7 @@ export default function Calculator() {
               onClick={() => document.getElementById('input-section')?.scrollIntoView({ behavior: 'smooth' })}
               className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-green-50 transition-all text-gray-500 hover:text-primary-green text-left w-full"
             >
-              <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-primary-green/10 flex items-center justify-center transition-colors flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-primary-green/10 flex items-center justify-center transition-colors shrink-0">
                 <ClipboardList className="w-4 h-4" />
               </div>
               <span className="font-bold text-sm">Info Input</span>
@@ -213,7 +216,7 @@ export default function Calculator() {
                   : 'opacity-40 cursor-not-allowed text-gray-300'
               }`}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
                 isAnalysisVisible ? 'bg-gray-100 group-hover:bg-primary-skyblue/10' : 'bg-gray-50'
               }`}>
                 <LayoutDashboard className="w-4 h-4" />
@@ -233,7 +236,7 @@ export default function Calculator() {
                   : 'opacity-40 cursor-not-allowed text-gray-300'
               }`}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
                 isAnalysisVisible ? 'bg-gray-100 group-hover:bg-amber-500/10' : 'bg-gray-50'
               }`}>
                 <Sparkles className="w-4 h-4" />
@@ -312,66 +315,93 @@ export default function Calculator() {
                       </button>
                     </div>
 
-                    <div className="relative pt-2">
-                      {config.inputType === 'select' ? (
-                        <Select
-                          labelPlacement="outside"
-                          label={null}
-                          placeholder="Select an option"
-                          className="w-full"
-                          variant="bordered"
-                          color="success"
-                          selectedKeys={[String(data[id])]}
-                          onSelectionChange={(keys) => updateValue(id, Array.from(keys)[0])}
-                          disableAnimation={false}
-                          scrollShadowProps={{
-                            isEnabled: false
-                          }}
-                          popoverProps={{
-                            classNames: {
-                              content: "bg-white border border-gray-100 shadow-xl rounded-2xl",
-                            }
-                          }}
-                          classNames={{
-                            trigger: "bg-white border-2 border-gray-100 hover:border-primary-green hover:bg-green-50/30 transition-all rounded-2xl h-16 pl-4 pr-10 shadow-sm group-data-[focus=true]:border-primary-green group-data-[focus=true]:ring-0 outline-none",
-                            value: "font-bold text-gray-700 pl-2",
-                            innerWrapper: "gap-2",
-                            label: "text-primary-green font-black uppercase tracking-wider text-xs",
-                            listbox: "bg-white p-2 gap-2",
-                            selectorIcon: "right-4",
-                          }}
+                    <div className="space-y-4 pt-2">
+                      {config.inputs.map((input) => {
+                        if (input.isExtendable && !expandedCategories[id]) return null;
+                        
+                        return (
+                          <div key={input.id} className="space-y-1">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-primary-green/60 ml-1">
+                              {input.name}
+                            </label>
+                            {input.renderInput === 'Select' && (
+                              <Select
+                                labelPlacement="outside"
+                                label={null}
+                                placeholder="Select an option"
+                                className="w-full"
+                                variant="bordered"
+                                color="success"
+                                selectedKeys={data[id][input.id] ? [String(data[id][input.id])] : []}
+                                onSelectionChange={(keys) => {
+                                  const val = Array.from(keys)[0];
+                                  if (val !== undefined) {
+                                    updateValue(id, input.id, val);
+                                  }
+                                }}
+                                disableAnimation={false}
+                                scrollShadowProps={{ isEnabled: false }}
+                                popoverProps={{
+                                  classNames: {
+                                    content: "bg-white border border-gray-100 shadow-xl rounded-2xl",
+                                  }
+                                }}
+                                classNames={{
+                                  trigger: "bg-white border-2 border-gray-100 hover:border-primary-green hover:bg-green-50/30 transition-all rounded-2xl h-14 pl-4 pr-10 shadow-sm group-data-[focus=true]:border-primary-green group-data-[focus=true]:ring-0 outline-none",
+                                  value: "font-bold text-gray-700 pl-2",
+                                  innerWrapper: "gap-2",
+                                  listbox: "bg-white p-2 gap-2",
+                                  selectorIcon: "right-4",
+                                }}
+                              >
+                                {input.options.map((opt) => (
+                                  <SelectItem 
+                                    key={opt.value} 
+                                    value={opt.value}
+                                    className="data-[hover=true]:bg-green-50 data-[hover=true]:text-primary-green transition-colors rounded-xl font-bold text-gray-700"
+                                  >
+                                    {opt.label}
+                                  </SelectItem>
+                                ))}
+                              </Select>
+                            )}
+
+                            {input.renderInput === 'Input' && (
+                              <Input
+                                type="number"
+                                labelPlacement="outside"
+                                label={null}
+                                placeholder={input.placeholder}
+                                value={String(data[id][input.id] || '')}
+                                onValueChange={(val) => updateValue(id, input.id, val)}
+                                variant="bordered"
+                                color="success"
+                                endContent={
+                                  <span className="text-xs font-black text-primary-green bg-green-50 px-3 py-1 rounded-lg ml-3 whitespace-nowrap min-w-fit">
+                                    {input.unit}
+                                  </span>
+                                }
+                                classNames={{
+                                  inputWrapper: "bg-white border-2 border-gray-100 hover:border-primary-green group-data-[focus=true]:border-primary-green transition-all rounded-2xl h-14 shadow-sm group-data-[focus=true]:ring-0 outline-none",
+                                  input: "font-bold text-gray-700 text-base outline-none",
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {config.inputs.some(i => i.isExtendable) && (
+                        <button
+                          onClick={() => toggleCategoryExpansion(id)}
+                          className="w-full py-2 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary-green transition-colors group"
                         >
-                          {config.options.map((opt) => (
-                            <SelectItem 
-                              key={opt.value} 
-                              value={opt.value}
-                              className="data-[hover=true]:bg-green-50 data-[hover=true]:text-primary-green transition-colors rounded-xl font-bold text-gray-700"
-                            >
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      ) : (
-                        <Input
-                          type="number"
-                          labelPlacement="outside"
-                          label={null}
-                          placeholder={config.placeholder}
-                          value={String(data[id] || '')}
-                          onValueChange={(val) => updateValue(id, val)}
-                          variant="bordered"
-                          color="success"
-                          endContent={
-                            <span className="text-sm font-black text-primary-green bg-green-50 px-3 py-1 rounded-lg ml-3 whitespace-nowrap min-w-fit">
-                              {config.unit}
-                            </span>
-                          }
-                          classNames={{
-                            inputWrapper: "bg-white border-2 border-gray-100 hover:border-primary-green group-data-[focus=true]:border-primary-green transition-all rounded-2xl h-16 shadow-sm group-data-[focus=true]:ring-0 outline-none",
-                            input: "font-bold text-gray-700 text-lg outline-none",
-                            label: "text-primary-green font-black uppercase tracking-wider text-xs",
-                          }}
-                        />
+                          {expandedCategories[id] ? (
+                            <>Show Less <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /></>
+                          ) : (
+                            <>Show More Specifics <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" /></>
+                          )}
+                        </button>
                       )}
                     </div>
                   </motion.div>
@@ -383,7 +413,7 @@ export default function Calculator() {
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-20 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200"
+                className="text-center py-20 bg-gray-50 rounded-4xl border-2 border-dashed border-gray-200"
               >
                 <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-300">
                   <Plus className="w-8 h-8" />
@@ -403,44 +433,54 @@ export default function Calculator() {
             </div>
 
             <div className="relative z-10">
-              <h2 className="text-sm font-black uppercase tracking-widest mb-2 opacity-80">Daily Footprint</h2>
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-7xl font-black">{totalScore}</span>
-                <span className="text-xl font-bold opacity-80">kg CO2e</span>
+              <div className="space-y-8">
+                {RESULT_TYPES.map((type) => (
+                  <div key={type.id}>
+                    <h2 className="text-sm font-black uppercase tracking-widest mb-2 opacity-80">{type.name}</h2>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-7xl font-black">{totalScore[type.id] || "0.00"}</span>
+                      <span className="text-xl font-bold opacity-80">{type.unit}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <p className="text-blue-100 mb-8 font-medium">Updated in real-time</p>
+              <p className="text-blue-100 mt-4 mb-8 font-medium">Updated in real-time</p>
 
-              <div className="space-y-4">
-                <div className="bg-white/20 backdrop-blur-md p-6 rounded-2xl border border-white/10">
-                  <h4 className="font-bold mb-2 flex items-center gap-2">
-                    <Info className="w-4 h-4" /> Insight
-                  </h4>
-                  <p className="text-sm leading-relaxed opacity-90">
-                    {totalScore === "0.00" 
-                      ? "Start adding your daily habits to see your impact calculation." 
-                      : totalScore < 5 
-                      ? "Great job! Your current profile indicates a low environmental impact. Keep it up!"
-                      : "Your footprint is currently above the average. Try adding more detailed info or adjusting your habits to see how it changes."}
-                  </p>
-                </div>
+                  <div className="space-y-4">
+                    <div className="bg-white/20 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                      <h4 className="font-bold mb-2 flex items-center gap-2">
+                        <Info className="w-4 h-4" /> Insight
+                      </h4>
+                      <div className="text-sm leading-relaxed opacity-90">
+                        {dailyFootprint === "0.00" 
+                          ? "Start adding your daily habits to see your impact calculation." 
+                          : parseFloat(dailyFootprint) < 5 
+                          ? "Great job! Your current profile indicates a low environmental impact. Keep it up!"
+                          : "Your footprint is currently above the average. Try adding more detailed info or adjusting your habits to see how it changes."}
+                      </div>
+                    </div>
 
-                <div className="text-[10px] opacity-60 uppercase tracking-tighter font-bold flex justify-between">
-                  <span>* Data points active: {activeSelections.length}</span>
-                  {activeSelections.length > 0 && (
-                    <button 
-                      onClick={() => setActiveSelections([])}
-                      className="hover:text-red-200 transition-colors flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3 h-3" /> Clear all
-                    </button>
-                  )}
-                </div>
-              </div>
+                    <div className="text-[10px] opacity-60 uppercase tracking-tighter font-bold flex justify-between">
+                      <span>* Data points active: {activeSelections.length}</span>
+                      {activeSelections.length > 0 && (
+                        <button 
+                          onClick={() => {
+                            setActiveSelections([]);
+                            setData(INITIAL_DATA);
+                            setSimulationData(INITIAL_DATA);
+                          }}
+                          className="hover:text-red-200 transition-colors flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3 h-3" /> Clear all
+                        </button>
+                      )}
+                    </div>
+                  </div>
             </div>
           </div>
           
           <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm text-primary-green flex-shrink-0">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm text-primary-green shrink-0">
               <Info className="w-5 h-5" />
             </div>
             <p className="text-xs text-gray-500 leading-relaxed">
@@ -474,7 +514,7 @@ export default function Calculator() {
                     <div className={`w-2 h-6 ${chart.accentColor} rounded-full`} />
                     {chart.title}
                   </h3>
-                  <div className="h-[300px] w-full">
+                  <div className="h-75 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       {chart.type === 'pie' ? (
                         <PieChart>
@@ -554,66 +594,90 @@ export default function Calculator() {
                       <div className="space-y-8">
                         {activeSelections.map(id => {
                           const config = CATEGORIES[id];
-                          const value = simulationData[id];
                           
                           return (
-                            <div key={`sim-${id}`} className="space-y-4">
-                              <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-amber-500">
-                                    <config.icon className="w-5 h-5" />
-                                  </div>
-                                  <div>
-                                    <p className="font-bold text-gray-800">{config.name}</p>
-                                    <p className="text-xs text-gray-500">{config.description}</p>
-                                  </div>
+                            <div key={`sim-${id}`} className="space-y-6">
+                              <div className="flex items-center gap-3 mb-2">
+                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-amber-500">
+                                  <config.icon className="w-5 h-5" />
                                 </div>
-                                <div className="text-right">
-                                  <span className="text-lg font-black text-amber-600">
-                                    {config.inputType === 'select' 
-                                      ? config.options.find(o => o.value === value.toString())?.label 
-                                      : `${value} ${config.unit}`}
-                                  </span>
+                                <div>
+                                  <p className="font-bold text-gray-800">{config.name}</p>
+                                  <p className="text-xs text-gray-500">{config.description}</p>
                                 </div>
                               </div>
-                              
-                              {config.inputType === 'select' ? (
-                                <div className="grid grid-cols-3 gap-2">
-                                  {config.options.map(opt => (
-                                    <button
-                                      key={opt.value}
-                                      onClick={() => setSimulationData(prev => ({ ...prev, [id]: opt.value }))}
-                                      className={`py-2 px-3 rounded-xl text-sm font-bold transition-all border-2 ${
-                                        value === opt.value
-                                          ? 'bg-amber-500 border-amber-500 text-white shadow-md'
-                                          : 'bg-white border-gray-100 text-gray-500 hover:border-amber-200'
-                                      }`}
-                                    >
-                                      {opt.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="relative pt-2">
-                                  <input
-                                    type="range"
-                                    min="0"
-                                    max={Math.max(data[id] * 2, 100)}
-                                    step={config.unit === 'Liters / day' ? '10' : '1'}
-                                    value={value}
-                                    onChange={(e) => {
-                                      const val = parseFloat(e.target.value);
-                                      setSimulationData(prev => ({ ...prev, [id]: val }));
-                                    }}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                                  />
-                                  <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-tighter">
-                                    <span>0 {config.unit}</span>
-                                    <span>Current: {data[id]} {config.unit}</span>
-                                    <span>Max {Math.max(data[id] * 2, 100)} {config.unit}</span>
-                                  </div>
-                                </div>
-                              )}
+
+                              <div className="grid gap-6 ml-4 pl-4 border-l-2 border-amber-100">
+                                {config.inputs.map(input => {
+                                  if (input.isExtendable && !expandedCategories[id]) return null;
+                                  const value = simulationData[id][input.id];
+
+                                  return (
+                                    <div key={`sim-input-${input.id}`} className="space-y-3">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-xs font-black uppercase tracking-widest text-amber-600/60">
+                                          {input.name}
+                                        </span>
+                                        <span className="text-sm font-black text-amber-600">
+                                          {input.renderSimulation === 'Options' 
+                                            ? input.options.find(o => o.value === (value?.toString() || ''))?.label || 'Not selected'
+                                            : `${value || 0} ${input.unit}`}
+                                        </span>
+                                      </div>
+
+                                      {input.renderSimulation === 'Options' && (
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                          {input.options.map(opt => (
+                                            <button
+                                              key={opt.value}
+                                              onClick={() => updateSimValue(id, input.id, opt.value)}
+                                              className={`py-2 px-3 rounded-xl text-[10px] font-bold transition-all border-2 ${
+                                                value === opt.value
+                                                  ? 'bg-amber-500 border-amber-500 text-white shadow-md'
+                                                  : 'bg-white border-gray-100 text-gray-500 hover:border-amber-200'
+                                              }`}
+                                            >
+                                              {opt.label}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+
+                                      {input.renderSimulation === 'Slider' && (
+                                        <div className="relative pt-2">
+                                          <input
+                                            type="range"
+                                            min="0"
+                                            max={Math.max(data[id][input.id] * 2, 100)}
+                                            step={input.unit === 'Liters / day' ? '10' : '1'}
+                                            value={value}
+                                            onChange={(e) => updateSimValue(id, input.id, parseFloat(e.target.value))}
+                                            className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                                          />
+                                          <div className="flex justify-between text-[8px] text-gray-400 mt-1 font-bold uppercase tracking-tighter">
+                                            <span>0 {input.unit}</span>
+                                            <span>Baseline: {data[id][input.id]}</span>
+                                            <span>Max {Math.max(data[id][input.id] * 2, 100)}</span>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+
+                                {config.inputs.some(i => i.isExtendable) && (
+                                  <button
+                                    onClick={() => toggleCategoryExpansion(id)}
+                                    className="w-full py-2 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-amber-500 transition-colors group mt-2"
+                                  >
+                                    {expandedCategories[id] ? (
+                                      <>Show Less <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /></>
+                                    ) : (
+                                      <>Show More Specifics <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" /></>
+                                    )}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           );
                         })}
@@ -629,24 +693,30 @@ export default function Calculator() {
                       </div>
 
                       <div className="relative z-10">
-                        <h2 className="text-sm font-black uppercase tracking-widest mb-2 opacity-80">Simulated Footprint</h2>
-                        <div className="flex items-baseline gap-2 mb-2">
-                          <span className="text-7xl font-black">{simTotalScore}</span>
-                          <span className="text-xl font-bold opacity-80">kg CO2e</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 mb-8">
-                          <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-1 ${
-                            parseFloat(simTotalScore) <= parseFloat(totalScore) 
-                              ? 'bg-green-400/30 text-green-50' 
-                              : 'bg-red-400/30 text-red-50'
-                          }`}>
-                            {parseFloat(simTotalScore) <= parseFloat(totalScore) ? (
-                              <>Reduction: {(parseFloat(totalScore) - parseFloat(simTotalScore)).toFixed(2)} kg</>
-                            ) : (
-                              <>Increase: {(parseFloat(simTotalScore) - parseFloat(totalScore)).toFixed(2)} kg</>
-                            )}
-                          </div>
+                        <div className="space-y-8 mb-8">
+                          {RESULT_TYPES.map((type) => (
+                            <div key={`sim-res-${type.id}`}>
+                              <h2 className="text-sm font-black uppercase tracking-widest mb-2 opacity-80">Simulated {type.name}</h2>
+                              <div className="flex items-baseline gap-2 mb-2">
+                                <span className="text-7xl font-black">{simTotalScore[type.id] || "0.00"}</span>
+                                <span className="text-xl font-bold opacity-80">{type.unit}</span>
+                              </div>
+                              
+                              <div className="flex items-center gap-3">
+                                <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-1 ${
+                                  parseFloat(simTotalScore[type.id] || 0) <= parseFloat(totalScore[type.id] || 0) 
+                                    ? 'bg-green-400/30 text-green-50' 
+                                    : 'bg-red-400/30 text-red-50'
+                                }`}>
+                                  {parseFloat(simTotalScore[type.id] || 0) <= parseFloat(totalScore[type.id] || 0) ? (
+                                    <>Reduction: {(parseFloat(totalScore[type.id] || 0) - parseFloat(simTotalScore[type.id] || 0)).toFixed(2)} {type.unit.split(' ')[0]}</>
+                                  ) : (
+                                    <>Increase: {(parseFloat(simTotalScore[type.id] || 0) - parseFloat(totalScore[type.id] || 0)).toFixed(2)} {type.unit.split(' ')[0]}</>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
 
                         <div className="space-y-6">

@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full bg-gradient-to-br from-primary-green to-primary-skyblue text-white py-24 px-4 text-center">
+      <section className="w-full bg-linear-to-br from-primary-green to-primary-skyblue text-white py-24 px-4 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-extrabold mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             Empowering a <span className="text-green-200">Greener</span> Future
@@ -69,7 +69,7 @@ export default function Home() {
       {/* Quote Section */}
       <section className="w-full bg-gray-50 py-16 px-4 text-center italic text-gray-700">
         <blockquote className="text-2xl max-w-4xl mx-auto">
-          "The greatest threat to our planet is the belief that someone else will save it."
+          &quot;The greatest threat to our planet is the belief that someone else will save it.&quot;
           <footer className="mt-4 not-italic font-bold text-lg text-primary-green">— Robert Swan</footer>
         </blockquote>
       </section>

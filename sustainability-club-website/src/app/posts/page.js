@@ -120,8 +120,8 @@ export default function PostsPage() {
                   {post.title}
                 </h3>
                 
-                <div className="prose prose-lg prose-green max-w-none text-gray-600 leading-relaxed overflow-hidden">
-                  <div className="markdown-container bg-white/80 p-8 rounded-3xl border border-gray-100 shadow-xl mb-8">
+                <div className="prose prose-lg prose-green max-w-none text-gray-600 leading-relaxed">
+                  <div className="markdown-container bg-white/80 p-8 rounded-3xl border border-gray-100 shadow-xl mb-12">
                     <ReactMarkdown 
                       remarkPlugins={[remarkGfm]} 
                       components={MarkdownComponents}
@@ -130,7 +130,7 @@ export default function PostsPage() {
                     </ReactMarkdown>
                   </div>
                   
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 mt-4">
                     <a 
                       href={post.originalType === 'markdown' ? `/posts/${post.id}` : post.originalUrl} 
                       target={post.originalType === 'markdown' ? '_self' : '_blank'} 

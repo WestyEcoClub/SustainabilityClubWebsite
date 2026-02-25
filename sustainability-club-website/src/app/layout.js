@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
           <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-center text-gray-600 dark:text-gray-400">
-            <p>© 2026 Sustainability Club. All rights reserved.</p>
+            <p>© 2026 Westminster School Sustainability Club. All rights reserved.</p>
           </footer>
         </Providers>
       </body>
