@@ -7,7 +7,7 @@ const DATA_PATH = path.join(process.cwd(), 'data', 'emission-factors.json');
 const SOURCES_PATH = path.join(process.cwd(), 'data', 'emission-factors.sources.json');
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 const DEFAULT_STATEMENT =
-  'Emission factors are periodically updated using U.S. EPA eGRID electricity datasets and IPCC fuel carbon accounting methods to reflect the most current energy system data available.';
+  'Emission factors are periodically updated using the GHG Protocol Cross-Sector Tools workbook and U.S. EPA eGRID electricity datasets to cover stationary combustion, purchased electricity, public transportation, and flight activity with current published defaults.';
 
 let cachedFactors = null;
 
@@ -165,7 +165,7 @@ export const refreshEmissionFactors = async ({ writeToDisk = true, force = false
         updates.push({ targetPath: source.targetPath, value });
       }
     } catch (error) {
-      continue;
+      // Ignore transient source refresh failures and keep existing cached factors.
     }
   }
 

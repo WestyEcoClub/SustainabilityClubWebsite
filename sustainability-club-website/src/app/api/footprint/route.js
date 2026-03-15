@@ -5,7 +5,7 @@ import { getEmissionFactors, refreshEmissionFactors } from '@/lib/emissionFactor
 export const runtime = 'nodejs';
 
 const DEFAULT_STATEMENT =
-  'Emission factors are periodically updated using U.S. EPA eGRID electricity datasets and IPCC fuel carbon accounting methods to reflect the most current energy system data available.';
+  'Emission factors are periodically updated using the GHG Protocol Cross-Sector Tools workbook and U.S. EPA eGRID electricity datasets to cover stationary combustion, purchased electricity, public transportation, and flight activity with current published defaults.';
 
 const normalizeSelections = (selections) => {
   return Array.isArray(selections) ? selections : [];

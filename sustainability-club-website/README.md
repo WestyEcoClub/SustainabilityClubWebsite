@@ -1,6 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Emission Factors & Credibility
 
-## Getting Started
+All emission factors used in this calculator are sourced from peer-reviewed, credible datasets:
+
+- **GHG Protocol** (2024): Transport (car fuel, public rail) and heating (natural gas)
+- **U.S. EPA eGRID** (2022): Electricity grid emissions with 26 regional subregions
+- **IPCC 2006 Guidelines**: Waste disposal emissions
+
+See [`EMISSION_FACTORS.md`](./EMISSION_FACTORS.md) for complete methodology, formulae, and sources.
+
+### Data Refresh
+
+Emission factors are automatically refreshed monthly to reflect the latest eGRID and GHG Protocol data:
+
+```bash
+npm run ingest:ghg
+```
+
+This updates `data/emission-factors.json` with the latest values from the GHG Protocol Excel workbook.
+
+---
+
+## Emission Factors API
+
+The calculator calls `POST /api/footprint` with user inputs, and the API returns:
+- **Current state** totals and category breakdown
+- **Simulated state** for "what-if" scenarios
+- **Metadata**: update date, data source statement, and references
+
+The API uses factors from `data/emission-factors.json` and supports:
+- **Electricity**: 26 US EPA eGRID subregions (or US average)
+- **Transport**: Gasoline, diesel, and rail options
+- **Flights**: Short-haul and long-haul distance-based factors
+
+---
 
 First, run the development server:
 

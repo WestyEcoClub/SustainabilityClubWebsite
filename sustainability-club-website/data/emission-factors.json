@@ -1,42 +1,319 @@
 {
-  "updatedAt": "2026-02-24",
-  "statement": "Emission factors are periodically updated using U.S. EPA eGRID electricity datasets and IPCC fuel carbon accounting methods to reflect the most current energy system data available.",
+  "updatedAt": "2026-03-15",
+  "statement": "Emission factors are periodically updated using the GHG Protocol Cross-Sector Tools workbook and U.S. EPA eGRID electricity datasets to cover stationary combustion, purchased electricity, public transportation, and flight activity with current published defaults.",
   "factors": {
     "transport": {
-      "car_kg_co2e_per_km": 0.2,
-      "public_transport_kg_co2e_per_km": 0.05
+      "car_kg_co2e_per_km": 0.220566921619,
+      "car_diesel_kg_co2e_per_km": 0.280503542847,
+      "public_transport": {
+        "modes": {
+          "rail": {
+            "label": "Light Rail / Tram",
+            "region": "UK",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.028603267114
+          },
+          "transit_rail": {
+            "label": "Subway / Tram",
+            "region": "US",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.058082816558
+          },
+          "commuter_rail": {
+            "label": "Commuter Rail",
+            "region": "US",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.083253383375
+          },
+          "intercity_rail": {
+            "label": "Intercity Rail",
+            "region": "US",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.070803310674
+          },
+          "bus": {
+            "label": "Bus",
+            "region": "US",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.04446325823
+          },
+          "coach": {
+            "label": "Coach",
+            "region": "UK",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.027181401342
+          },
+          "ferry": {
+            "label": "Ferry",
+            "region": "UK",
+            "basis": "passenger_km",
+            "kg_co2e_per_pkm": 0.112698080805
+          }
+        },
+        "default_region": "US"
+      },
+      "motorcycle_kg_co2e_per_km": 0.122314383807,
+      "vehicle_factors": {
+        "passenger_car": {
+          "average_fuel_economy_km_per_l": 10.374149659864,
+          "gasoline_kg_co2e_per_km": 0.220566921619,
+          "diesel_kg_co2e_per_km": 0.280503542847
+        },
+        "motorcycle": {
+          "average_fuel_economy_km_per_l": 18.707482993197,
+          "gasoline_kg_co2e_per_km": 0.122314383807
+        }
+      }
     },
     "electricity": {
-      "kg_co2e_per_kwh": 0.39
+      "kg_co2e_per_kwh": 0.6042597807211745,
+      "us": {
+        "subregions": {
+          "ASCC Alaska Grid": {
+            "co2_lb_per_mwh": 1284.7206,
+            "kg_co2e_per_kwh": 0.582739461741822
+          },
+          "ASCC Miscellaneous": {
+            "co2_lb_per_mwh": 535.7275,
+            "kg_co2e_per_kwh": 0.243001906399175
+          },
+          "WECC Southwest": {
+            "co2_lb_per_mwh": 1311.0503,
+            "kg_co2e_per_kwh": 0.594682412766211
+          },
+          "WECC California": {
+            "co2_lb_per_mwh": 724.1201,
+            "kg_co2e_per_kwh": 0.328455352323637
+          },
+          "ERCOT All": {
+            "co2_lb_per_mwh": 1252.5653,
+            "kg_co2e_per_kwh": 0.568154063006761
+          },
+          "FRCC All": {
+            "co2_lb_per_mwh": 1220.1098,
+            "kg_co2e_per_kwh": 0.553432495842226
+          },
+          "HICC Miscellaneous": {
+            "co2_lb_per_mwh": 1514.9249,
+            "kg_co2e_per_kwh": 0.687158375763013
+          },
+          "HICC Oahu": {
+            "co2_lb_per_mwh": 1811.9758,
+            "kg_co2e_per_kwh": 0.821898397504646
+          },
+          "MRO East": {
+            "co2_lb_per_mwh": 1834.7194,
+            "kg_co2e_per_kwh": 0.8322147209309779
+          },
+          "MRO West": {
+            "co2_lb_per_mwh": 1821.8448,
+            "kg_co2e_per_kwh": 0.8263749006041761
+          },
+          "NPCC New England": {
+            "co2_lb_per_mwh": 927.6814,
+            "kg_co2e_per_kwh": 0.42078920483091803
+          },
+          "WECC Northwest": {
+            "co2_lb_per_mwh": 902.2403,
+            "kg_co2e_per_kwh": 0.409249315986511
+          },
+          "NPCC NYC/Westchester": {
+            "co2_lb_per_mwh": 815.4518,
+            "kg_co2e_per_kwh": 0.369882714582766
+          },
+          "NPCC Long Island": {
+            "co2_lb_per_mwh": 1536.8038,
+            "kg_co2e_per_kwh": 0.697082477867006
+          },
+          "NPCC Upstate NY": {
+            "co2_lb_per_mwh": 720.7984,
+            "kg_co2e_per_kwh": 0.326948654548208
+          },
+          "Puerto Rico Miscellaneous": {
+            "co2_lb_per_mwh": 1537.308,
+            "kg_co2e_per_kwh": 0.69731117913996
+          },
+          "RFC East": {
+            "co2_lb_per_mwh": 1139.0746,
+            "kg_co2e_per_kwh": 0.5166755474208019
+          },
+          "RFC Michigan": {
+            "co2_lb_per_mwh": 1563.2804,
+            "kg_co2e_per_kwh": 0.709092061610548
+          },
+          "RFC West": {
+            "co2_lb_per_mwh": 1537.8249,
+            "kg_co2e_per_kwh": 0.697545641036013
+          },
+          "WECC Rockies": {
+            "co2_lb_per_mwh": 1883.0808,
+            "kg_co2e_per_kwh": 0.854151082973496
+          },
+          "SPP North": {
+            "co2_lb_per_mwh": 1960.9435,
+            "kg_co2e_per_kwh": 0.889469009601095
+          },
+          "SPP South": {
+            "co2_lb_per_mwh": 1658.1362,
+            "kg_co2e_per_kwh": 0.752117928740794
+          },
+          "SERC Mississippi Valley": {
+            "co2_lb_per_mwh": 1019.7374,
+            "kg_co2e_per_kwh": 0.46254510404363797
+          },
+          "SERC Midwest": {
+            "co2_lb_per_mwh": 1830.5105,
+            "kg_co2e_per_kwh": 0.8303055960048851
+          },
+          "SERC South": {
+            "co2_lb_per_mwh": 1489.5393,
+            "kg_co2e_per_kwh": 0.675643661295141
+          },
+          "SERC Tennessee Valley": {
+            "co2_lb_per_mwh": 1510.443,
+            "kg_co2e_per_kwh": 0.68512542011991
+          },
+          "SERC Virginia/Carolina": {
+            "co2_lb_per_mwh": 1134.8788,
+            "kg_co2e_per_kwh": 0.514772364554756
+          },
+          "ASCC - Alaska Grid": {
+            "co2_lb_per_mwh": 1232.3571,
+            "kg_co2e_per_kwh": 0.5589877776753269
+          },
+          "ASCC - Miscellaneous": {
+            "co2_lb_per_mwh": 498.8588,
+            "kg_co2e_per_kwh": 0.22627854538735598
+          },
+          "ASCC - Subregion unknown": {
+            "co2_lb_per_mwh": 1089.794,
+            "kg_co2e_per_kwh": 0.49432224327178004
+          },
+          "ERCOT - All": {
+            "co2_lb_per_mwh": 1324.3497,
+            "kg_co2e_per_kwh": 0.600714919131789
+          },
+          "FRCC - All": {
+            "co2_lb_per_mwh": 1318.5715,
+            "kg_co2e_per_kwh": 0.598093971699455
+          },
+          "HICC - Subregion unknown": {
+            "co2_lb_per_mwh": 1731.0139,
+            "kg_co2e_per_kwh": 0.785174697403943
+          },
+          "MRO - Subregion unknown": {
+            "co2_lb_per_mwh": 1823.6892,
+            "kg_co2e_per_kwh": 0.827211506371404
+          },
+          "NPCC - Subregion unknown": {
+            "co2_lb_per_mwh": 875.7404,
+            "kg_co2e_per_kwh": 0.397229163540748
+          },
+          "RFC - Subregion unknown": {
+            "co2_lb_per_mwh": 1427.2099,
+            "kg_co2e_per_kwh": 0.647371521028463
+          },
+          "SERC - Subregion unknown": {
+            "co2_lb_per_mwh": 1368.8544,
+            "kg_co2e_per_kwh": 0.620901911480928
+          },
+          "SPP - Subregion unknown": {
+            "co2_lb_per_mwh": 1751.3721,
+            "kg_co2e_per_kwh": 0.794409021590877
+          },
+          "WECC - Subregion unknown": {
+            "co2_lb_per_mwh": 1033.1239,
+            "kg_co2e_per_kwh": 0.46861711830464303
+          },
+          "US Average": {
+            "co2_lb_per_mwh": null,
+            "kg_co2e_per_kwh": 0.6042597807211745
+          }
+        },
+        "average_kg_co2e_per_kwh": 0.6042597807211745
+      }
     },
     "waste": {
-      "general_kg_co2e_per_kg": 1.5,
-      "recycling_kg_co2e_per_kg": 0.2
-    },
-    "water": {
-      "kg_co2e_per_liter": 0.001
+      "general_kg_co2e_per_kg": 1.5
     },
     "flights": {
-      "short_haul_kg_co2e_per_hour": 150,
-      "long_haul_kg_co2e_per_hour": 250
+      "short_haul_kg_co2e_per_pkm": 0.081087038926,
+      "long_haul_kg_co2e_per_pkm": 0.101974891275,
+      "domestic_kg_co2e_per_pkm": 0.129906899329,
+      "domestic": {
+        "average": 0.129906899329
+      },
+      "short_haul": {
+        "average": 0.081087038926,
+        "economy": 0.079758146309,
+        "business": 0.119637173154
+      },
+      "long_haul": {
+        "average": 0.101974891275,
+        "economy": 0.078100361074,
+        "premium_economy": 0.124951636242,
+        "business": 0.226477634899,
+        "first": 0.312377936913
+      },
+      "international": {
+        "average": 0.096980428188,
+        "economy": 0.074268083221,
+        "premium_economy": 0.118828280537,
+        "business": 0.215377508725,
+        "first": 0.297083440268
+      }
     },
     "heating": {
-      "gas_kg_co2e_per_m3": 1.9
+      "gas_kg_co2e_per_m3": 1.88496,
+      "lpg_kg_co2e_per_liter": 1.473055964423,
+      "kerosene_kg_co2e_per_liter": 2.671550539568,
+      "fuels": {
+        "natural_gas": {
+          "label": "Natural Gas",
+          "unit": "m3",
+          "kg_co2e_per_unit": 1.88496
+        },
+        "lpg": {
+          "label": "LPG / Propane",
+          "unit": "liter",
+          "kg_co2e_per_unit": 1.473055964423
+        },
+        "kerosene": {
+          "label": "Kerosene",
+          "unit": "liter",
+          "kg_co2e_per_unit": 2.671550539568
+        },
+        "diesel": {
+          "label": "Gas / Diesel Oil",
+          "unit": "liter",
+          "kg_co2e_per_unit": 2.909985733621
+        },
+        "fuel_oil": {
+          "label": "Residual Fuel Oil",
+          "unit": "liter",
+          "kg_co2e_per_unit": 3.005268366599
+        }
+      }
     }
   },
   "sources": [
     {
-      "id": "epa-egrid",
-      "title": "U.S. EPA eGRID",
-      "url": "https://www.epa.gov/egrid",
-      "notes": "Electricity emission factor (U.S. average)."
+      "id": "ghg-protocol-2024",
+      "title": "GHG Protocol Emission Factors for Cross-Sector Tools (v2.0, 2024)",
+      "url": "https://ghgprotocol.org/calculation-tools-and-guidance",
+      "sheets": [
+        "Stationary Combustion",
+        "Mobile Combustion - Fuel Use",
+        "Mobile Combustion - Distance",
+        "Mobile Combustion - Public"
+      ]
     },
     {
-      "id": "ipcc-2006",
-      "title": "IPCC 2006 Guidelines for National Greenhouse Gas Inventories",
-      "url": "https://www.ipcc-nggip.iges.or.jp/public/2006gl/",
-      "notes": "Fuel carbon accounting methods for natural gas."
+      "id": "epa-egrid-2022",
+      "title": "U.S. EPA eGRID 2022 (Electricity Grid Emissions)",
+      "url": "https://www.epa.gov/egrid",
+      "year": 2022,
+      "method": "Location-based approach for 26 US subregions"
     }
   ]
 }
-

@@ -37,6 +37,7 @@ export default function RootLayout({ children }) {
                 <Link href="/" className="hover:text-primary-green transition-colors">Home</Link>
                 <Link href="/calculator" className="hover:text-primary-green transition-colors">Calculator</Link>
                 <Link href="/posts" className="hover:text-primary-green transition-colors">Research</Link>
+                <Link href="/about" className="hover:text-primary-green transition-colors">About</Link>
               </div>
             </nav>
           </header>

@@ -47,8 +47,12 @@ const CategoryButton = ({ cat, isActive, onAdd, onRemove }) => {
   if (isActive) {
     return (
       <button
-        onClick={() => onRemove(cat.id)}
-        onMouseEnter={() => setIsDeleteHovered(false)}
+        onClick={() => {
+          setIsDeleteHovered(false);
+          onRemove(cat.id);
+        }}
+        onMouseLeave={() => setIsDeleteHovered(false)}
+        // onMouseEnter={() => setIsDeleteHovered(false)}
         className={`group relative flex items-center justify-center gap-2 px-8 py-5 rounded-2xl font-bold transition-all border-2 overflow-hidden min-w-40 ${
           isDeleteHovered 
             ? 'bg-red-500 border-red-500 text-white' 
@@ -89,7 +93,10 @@ const CategoryButton = ({ cat, isActive, onAdd, onRemove }) => {
 
   return (
     <button
-      onClick={() => onAdd(cat.id)}
+      onClick={() => {
+        setIsDeleteHovered(false);
+        onAdd(cat.id);
+      }}
       className="flex items-center gap-2 px-6 py-3 rounded-2xl font-bold bg-white border-2 border-primary-green/20 text-primary-green hover:border-primary-green hover:bg-green-50 shadow-sm transition-all active:scale-95"
     >
       <cat.icon className="w-5 h-5" />
@@ -337,7 +344,7 @@ export default function Calculator() {
             <div className="flex flex-wrap gap-3">
               {Object.values(CATEGORIES).map(cat => (
                 <CategoryButton
-                  key={cat.id}
+                  key={`${cat.id}-${activeSelections.includes(cat.id) ? 'active' : 'inactive'}`}
                   cat={cat}
                   isActive={activeSelections.includes(cat.id)}
                   onAdd={addCategory}
@@ -385,7 +392,7 @@ export default function Calculator() {
                     <div className="space-y-4 pt-2">
                       {config.inputs.map((input) => {
                         if (input.isExtendable && !expandedCategories[id]) return null;
-                        
+
                         return (
                           <div key={input.id} className="space-y-1">
                             <label className="text-[10px] font-black uppercase tracking-widest text-primary-green/60 ml-1">
@@ -422,10 +429,15 @@ export default function Calculator() {
                                 }}
                               >
                                 {input.options.map((opt) => (
-                                  <SelectItem 
-                                    key={opt.value} 
+                                  <SelectItem
+                                    key={`${input.id}-${opt.value}`}
                                     value={opt.value}
-                                    className="data-[hover=true]:bg-green-50 data-[hover=true]:text-primary-green transition-colors rounded-xl font-bold text-gray-700"
+                                    isDisabled={Boolean(opt.disabled)}
+                                    className={`rounded-xl font-bold transition-colors ${
+                                      opt.disabled
+                                        ? 'text-gray-300 data-[hover=true]:bg-transparent'
+                                        : 'text-gray-700 data-[hover=true]:bg-green-50 data-[hover=true]:text-primary-green'
+                                    }`}
                                   >
                                     {opt.label}
                                   </SelectItem>
@@ -706,19 +718,32 @@ export default function Calculator() {
 
                                       {input.renderSimulation === 'Options' && (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                          {input.options.map(opt => (
-                                            <button
-                                              key={opt.value}
-                                              onClick={() => updateSimValue(id, input.id, opt.value)}
-                                              className={`py-2 px-3 rounded-xl text-[10px] font-bold transition-all border-2 ${
-                                                value === opt.value
-                                                  ? 'bg-amber-500 border-amber-500 text-white shadow-md'
-                                                  : 'bg-white border-gray-100 text-gray-500 hover:border-amber-200'
-                                              }`}
-                                            >
-                                              {opt.label}
-                                            </button>
-                                          ))}
+                                          {input.options.map(opt => {
+                                            if (opt.disabled) {
+                                              return (
+                                                <div
+                                                  key={`sim-group-${input.id}-${opt.value}`}
+                                                  className="col-span-2 sm:col-span-3 text-[10px] font-black uppercase tracking-widest text-amber-400/80 pt-2"
+                                                >
+                                                  {opt.label}
+                                                </div>
+                                              );
+                                            }
+
+                                            return (
+                                              <button
+                                                key={`sim-opt-${input.id}-${opt.value}`}
+                                                onClick={() => updateSimValue(id, input.id, opt.value)}
+                                                className={`py-2 px-3 rounded-xl text-[10px] font-bold transition-all border-2 ${
+                                                  value === opt.value
+                                                    ? 'bg-amber-500 border-amber-500 text-white shadow-md'
+                                                    : 'bg-white border-gray-100 text-gray-500 hover:border-amber-200'
+                                                }`}
+                                              >
+                                                {opt.label}
+                                              </button>
+                                            );
+                                          })}
                                         </div>
                                       )}
 
