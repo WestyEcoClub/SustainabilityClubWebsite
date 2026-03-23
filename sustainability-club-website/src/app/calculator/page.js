@@ -635,6 +635,11 @@ export default function Calculator() {
                           <Tooltip 
                             cursor={{ fill: '#f8fafb' }}
                             contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                            formatter={(value) => (
+                              chart.id === 'intensityOnlyComparison'
+                                ? [`${value} kg CO2e/kWh`, 'Grid Intensity']
+                                : [`${value} kg CO2e/day`, 'Impact']
+                            )}
                           />
                           <Bar 
                             dataKey="value" 

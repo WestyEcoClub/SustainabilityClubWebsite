@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-15",
+  "updatedAt": "2026-03-23",
   "statement": "Emission factors are periodically updated using the GHG Protocol Cross-Sector Tools workbook and U.S. EPA eGRID electricity datasets to cover stationary combustion, purchased electricity, public transportation, and flight activity with current published defaults.",
   "factors": {
     "transport": {
@@ -294,6 +294,57 @@
           "kg_co2e_per_unit": 3.005268366599
         }
       }
+    },
+    "analysis": {
+      "global_comparison_electricity": {
+        "basis": "electricity_use_only",
+        "unit": "kg_co2e_per_kwh",
+        "countries": [
+          {
+            "id": "US",
+            "name": "US",
+            "year": 2022,
+            "sourceSheet": "Electricity US",
+            "kg_co2e_per_kwh": 0.423146527738
+          },
+          {
+            "id": "BRAZIL",
+            "name": "Brazil",
+            "year": 2023,
+            "sourceSheet": "Electricity CN, TW, BR, TH, UK",
+            "kg_co2e_per_kwh": 0.038509564776
+          },
+          {
+            "id": "CHINA",
+            "name": "China",
+            "year": 2022,
+            "sourceSheet": "Electricity CN, TW, BR, TH, UK",
+            "kg_co2e_per_kwh": 0.5703
+          },
+          {
+            "id": "TAIWAN",
+            "name": "Taiwan",
+            "year": 2022,
+            "sourceSheet": "Electricity CN, TW, BR, TH, UK",
+            "kg_co2e_per_kwh": 0.495
+          },
+          {
+            "id": "THAILAND",
+            "name": "Thailand",
+            "year": 2022,
+            "sourceSheet": "Electricity CN, TW, BR, TH, UK",
+            "kg_co2e_per_kwh": 0.412
+          },
+          {
+            "id": "UK",
+            "name": "UK",
+            "year": 2023,
+            "sourceSheet": "Electricity CN, TW, BR, TH, UK",
+            "kg_co2e_per_kwh": 0.20496
+          }
+        ],
+        "notes": "Comparison values come from workbook electricity grid emission factors and are converted to daily emissions in the UI using user electricity consumption data."
+      }
     }
   },
   "sources": [
@@ -314,6 +365,15 @@
       "url": "https://www.epa.gov/egrid",
       "year": 2022,
       "method": "Location-based approach for 26 US subregions"
+    },
+    {
+      "id": "ghg-protocol-electricity-international",
+      "title": "GHG Protocol Electricity Grid Factors (US + CN/TW/BR/TH/UK)",
+      "url": "https://ghgprotocol.org/calculation-tools-and-guidance",
+      "sheets": [
+        "Electricity US",
+        "Electricity CN, TW, BR, TH, UK"
+      ]
     }
   ]
 }

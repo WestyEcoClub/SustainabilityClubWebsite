@@ -5,8 +5,20 @@ import remarkGfm from "remark-gfm";
 import { Sparkles } from "lucide-react";
 
 export const metadata = {
-  title: "About | Sustainability Club",
+  title: "About",
   description: "Learn about the mission, methods, and creators behind our carbon calculator.",
+  alternates: {
+    canonical: '/about'
+  },
+  openGraph: {
+    title: 'About Sustainability Club',
+    description: 'Learn about the mission, methods, and creators behind our carbon calculator.',
+    url: '/about'
+  },
+  twitter: {
+    title: 'About Sustainability Club',
+    description: 'Learn about the mission, methods, and creators behind our carbon calculator.'
+  }
 };
 
 async function getAboutMarkdown() {

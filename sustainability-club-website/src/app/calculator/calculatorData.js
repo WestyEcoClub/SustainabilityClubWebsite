@@ -279,10 +279,19 @@ export const CATEGORIES = {
   }
 };
 
-export const COMPARISON_DATA = {
-  local: 8.2,
-  national: 14.5,
-  world: 4.8
+const COMPARISON_BAR_COLORS = ['#64748B', '#94A3B8', '#A3A3A3', '#9CA3AF', '#CBD5E1', '#D1D5DB'];
+
+const getElectricityComparisonCountries = () => {
+  const countries = FACTORS?.analysis?.global_comparison_electricity?.countries;
+  if (!Array.isArray(countries)) return [];
+
+  return countries
+    .filter((entry) => Number.isFinite(entry?.kg_co2e_per_kwh))
+    .sort((a, b) => {
+      if (a.name === 'US') return -1;
+      if (b.name === 'US') return 1;
+      return String(a.name || '').localeCompare(String(b.name || ''));
+    });
 };
 
 export const INITIAL_DATA = {
@@ -383,18 +392,42 @@ export const ANALYSIS_CHARTS = {
   comparison: {
     id: 'comparison',
     type: 'bar',
-    title: 'Global Comparison',
+    title: 'Global Comparison (Electricity Use Only)',
     accentColor: 'bg-primary-skyblue',
-    footer: 'Values in kg CO2e per day',
+    footer: 'Values are estimated kg CO2e/day using your electricity input and workbook grid factors.',
     getData: (data, activeSelections, apiResults) => {
-      const totalScore = apiResults?.current?.totals?.dailyFootprint
-        ?? (calculateScore(data, activeSelections).dailyFootprint || "0.00");
+      const monthlyUsage = parseFloat(data?.electricity?.usage) || 0;
+      const kwhPerDay = monthlyUsage / 30;
+      const selectedRegion = data?.electricity?.region || 'US Average';
+      const yourElectricityDaily = apiResults?.current?.categories?.electricity?.dailyFootprint
+        ?? (kwhPerDay * resolveElectricityFactor(FACTORS, selectedRegion));
+
+      const benchmarkBars = getElectricityComparisonCountries().map((entry, index) => {
+        return {
+          name: entry.name,
+          value: parseFloat((kwhPerDay * entry.kg_co2e_per_kwh).toFixed(2)),
+          fill: COMPARISON_BAR_COLORS[index % COMPARISON_BAR_COLORS.length]
+        };
+      });
+
       return [
-        { name: 'You', value: parseFloat(totalScore), fill: '#0EA5E9' },
-        { name: 'Local', value: COMPARISON_DATA.local, fill: '#10B981' },
-        { name: 'National', value: COMPARISON_DATA.national, fill: '#64748B' },
-        { name: 'World', value: COMPARISON_DATA.world, fill: '#94A3B8' }
+        { name: 'You', value: parseFloat((yourElectricityDaily || 0).toFixed(2)), fill: '#0EA5E9' },
+        ...benchmarkBars
       ];
+    }
+  },
+  intensityOnlyComparison: {
+    id: 'intensityOnlyComparison',
+    type: 'bar',
+    title: 'Intensity-Only Comparison',
+    accentColor: 'bg-primary-green',
+    footer: 'Values are fixed grid intensity factors from the workbook (kg CO2e/kWh).',
+    getData: () => {
+      return getElectricityComparisonCountries().map((entry, index) => ({
+        name: entry.name,
+        value: parseFloat(entry.kg_co2e_per_kwh.toFixed(3)),
+        fill: COMPARISON_BAR_COLORS[index % COMPARISON_BAR_COLORS.length]
+      }));
     }
   }
 };

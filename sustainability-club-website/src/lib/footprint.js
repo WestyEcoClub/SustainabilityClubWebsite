@@ -74,6 +74,13 @@ const STATIC_DEFAULTS = {
       lpg: { label: 'LPG / Propane', unit: 'liter', kg_co2e_per_unit: 1.4731 },
       kerosene: { label: 'Kerosene', unit: 'liter', kg_co2e_per_unit: 2.6716 }
     }
+  },
+  analysis: {
+    global_comparison_electricity: {
+      basis: 'electricity_use_only',
+      unit: 'kg_co2e_per_kwh',
+      countries: []
+    }
   }
 };
 
@@ -152,6 +159,17 @@ const mergeFactors = (factors) => {
       fuels: {
         ...(STATIC_DEFAULTS.heating.fuels || {}),
         ...(source.heating?.fuels || {})
+      }
+    },
+    analysis: {
+      ...STATIC_DEFAULTS.analysis,
+      ...(source.analysis || {}),
+      global_comparison_electricity: {
+        ...(STATIC_DEFAULTS.analysis.global_comparison_electricity || {}),
+        ...(source.analysis?.global_comparison_electricity || {}),
+        countries: Array.isArray(source.analysis?.global_comparison_electricity?.countries)
+          ? source.analysis.global_comparison_electricity.countries
+          : (STATIC_DEFAULTS.analysis.global_comparison_electricity.countries || [])
       }
     }
   };

@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "ingest:ghg": "node scripts/ingest-ghg-excel.js"
+    "ingest:ghg": "node scripts/ingest-ghg-excel.js",
+    "ingest:electricity-comparison": "node scripts/generate-electricity-comparison.js",
+    "ingest:all": "npm run ingest:ghg && npm run ingest:electricity-comparison"
   },
   "dependencies": {
     "@heroui/react": "^2.8.9",

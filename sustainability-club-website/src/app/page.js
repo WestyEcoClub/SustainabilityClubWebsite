@@ -1,6 +1,23 @@
 import Link from 'next/link';
 import { Sprout, BookOpen, Calculator as CalcIcon, Users } from 'lucide-react';
 
+export const metadata = {
+  title: 'Home',
+  description: 'Student-led sustainability projects, climate research, and a practical footprint calculator for daily decisions.',
+  alternates: {
+    canonical: '/'
+  },
+  openGraph: {
+    title: 'Sustainability Club',
+    description: 'Student-led sustainability projects, climate research, and a practical footprint calculator for daily decisions.',
+    url: '/'
+  },
+  twitter: {
+    title: 'Sustainability Club',
+    description: 'Student-led sustainability projects, climate research, and a practical footprint calculator for daily decisions.'
+  }
+};
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center">

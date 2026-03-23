@@ -59,6 +59,20 @@ To learn more about Next.js, take a look at the following resources:
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+## SEO Setup
+
+The app now includes baseline SEO support:
+
+- Route metadata (title/description/canonical/Open Graph/Twitter)
+- `robots.txt` via `src/app/robots.js`
+- `sitemap.xml` via `src/app/sitemap.js` (includes dynamic research post pages)
+
+Set your production domain for canonical URLs and sitemap links:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-domain.example
+```
+
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
